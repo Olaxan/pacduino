@@ -17,6 +17,8 @@ public:
 
 	player(level* level, int x, int y, int cell, int cell_offset, int cell_count);
 
+	void (*on_step) (void);
+
 	void set_direction(direction dir);
 	void set_direction(int x, int y);
 	

@@ -1,10 +1,8 @@
 #include "ghosts.h"
+#include "config.h"
 
 #include <SPI.h>
 #include <GD2.h>
-
-#define MAX_SCARED_STEPS 30
-#define SCARED_STEPS_BLINK 10
 
 ghost::ghost(level* level, player* pacman, int x, int y, int cell, int cell_offset, int cell_count, int scared_offset, int scared_count) : 
 	player{ level, x, y, cell, cell_offset, cell_count }, player_(pacman), home_x_(x), home_y_(y),	
@@ -18,23 +16,25 @@ void ghost::step()
 
 	move();	
 
-	if (player_->is_at(x_, y_))
+	if (player_->is_at(x_, y_) || player_->is_at(prev_x_, prev_y_))
 	{
 		if (is_scared_)
 		{
-			on_death_ghost();
+			if (on_death_ghost != nullptr) 
+				on_death_ghost();
+
 			x_ = home_x_;
 			y_ = home_y_;
 			is_scared_ = false;
 		}
-		else
+		else if (on_death_player != nullptr)
 			on_death_player();
 	}
-
-	scared_steps_--;
 	
 	if (scared_steps_ < 0)
 		is_scared_ = false;
+	else
+		scared_steps_--;
 }
 
 void ghost::set_scared(bool is_scared)

@@ -7,16 +7,7 @@
 #include "level.h"
 #include "pac.h"
 #include "ghosts.h"
-
-#define LEVEL_PATH "level1.csv"
-#define LEVEL_WIDTH 16
-#define LEVEL_HEIGHT 16
-
-#define SCREEN_WIDTH 480
-#define SCREEN_HEIGHT 272
-
-#define TICK_RATE 20
-#define READ_RATE 10
+#include "config.h"
 
 #define error(msg) {Serial.println(F(msg)); while(1);}
 
@@ -38,13 +29,16 @@ float scale = 1.0f;
 int frame = 0;
 int score = 0;
 int kills = 0;
+int pellets = 0;
+
+bool win = false;
 
 level lvl = level(LEVEL_WIDTH, LEVEL_HEIGHT, VTILES_HANDLE);
-player pac = player(&lvl, 1, 1, SPRITES_HANDLE, 0, 3);
+player pac = player(&lvl, 1, 1, SPRITES2_HANDLE, 0, 3);
 
 ghost ghosts[2] = {
-	ghost(&lvl, &pac, 0, 10, SPRITES_HANDLE, 12, 2, 44, 2), 
-	ghost(&lvl, &pac, 0, 12, SPRITES_HANDLE, 20, 2, 44, 2) 
+	ghost(&lvl, &pac, 0, 10, SPRITES2_HANDLE, 12, 2, 44, 2), 
+	ghost(&lvl, &pac, 0, 12, SPRITES2_HANDLE, 20, 2, 44, 2) 
 };
 
 void (*reset) (void) = 0;
@@ -64,28 +58,38 @@ void setup()
 	Serial.println("Loading GFX...");
 	LOAD_ASSETS();
 
+	GD.ClearColorRGB(0);
+
 	GD.BitmapHandle(0);
-	GD.BitmapLayout(ARGB4, 2 * 32, 32);
+	GD.BitmapLayout(ARGB2, 32, 32);
 	GD.BitmapHandle(1);
-	GD.BitmapLayout(ARGB4, 2 * 16, 16);
+	GD.BitmapLayout(ARGB2, 16, 16);
+	GD.BitmapHandle(2);
+	GD.BitmapLayout(ARGB2, 480, 347);
 		
 	Serial.println("Game ready.");
 
 	scale = lvl.screen_scale(SCREEN_WIDTH, SCREEN_HEIGHT, VTILES_WIDTH);
-
+	
+	// Setup events
 	lvl.on_pickup_pellet = &on_pickup_pellet;
 	lvl.on_pickup_power = &on_pickup_power;
+	pac.on_step = &on_waka_waka;
 
 	for (auto& g : ghosts)
 	{
 		g.on_death_ghost = &on_death_ghost;
 		g.on_death_player = &on_death_player;
 	}
+
+	pellets = lvl.count(PELLET_INDEX);
+
+	splash();
 }
 
 void loop() 
 {
-
+	
 	if (frame % READ_RATE == 0)
 	{
 		// Do not read input every frame, since it leads to performance loss.
@@ -108,17 +112,19 @@ void loop()
 	/* ---------- RENDERING ---------- */
 
 	float frame_alpha = float(frame) / float(TICK_RATE);
-
-	GD.ClearColorRGB(0);
+	int frame_offset = LEVEL_WIDTH * VTILES_WIDTH * scale + 10; 
 	GD.Clear();
 
-	GD.cmd_text(LEVEL_WIDTH * VTILES_WIDTH * scale + 10, 10, 21, 0, String("Pellets: " + String(score)).c_str());
-	GD.cmd_text(LEVEL_WIDTH * VTILES_WIDTH * scale + 10, 25, 21, 0, String("Kills: " + String(kills)).c_str());
-	
+	GD.cmd_text(frame_offset - 5, 5, CRACKMAN_HANDLE, 0, "KNARKMAN");	
+	GD.cmd_text(frame_offset, 40, 21, 0, String("Pellets: " + String(score) + " / " + String(pellets)).c_str());
+	GD.cmd_text(frame_offset, 55, 21, 0, String("Kills: " + String(kills)).c_str());
+
 	// Apply level scaling
 	GD.Begin(BITMAPS);
+
 	GD.cmd_scale(F16(scale), F16(scale));
 	GD.cmd_setmatrix();
+
 	lvl.draw();
 
 	GD.cmd_loadidentity();
@@ -137,15 +143,33 @@ void loop()
 	frame++;
 }
 
+void splash()
+{
+	GD.Clear();
+	GD.cmd_text(5, 5, CRACKMAN_HANDLE, 0, "KNARKMAN");
+	GD.cmd_text(10, 40, 21, 0, "Tonto Turbo Inc. 2020");
+	GD.Begin(BITMAPS);
+	GD.Vertex2ii(100, 0, SPLASH_HANDLE);
+	GD.swap();
+	delay(SPLASH_DELAY);
+}
+
 void on_pickup_pellet()
 {
 	score++;
+	if (score == pellets)
+		win = true;
 }
 
 void on_pickup_power()
 {
 	for (auto& g : ghosts)
 		g.set_scared(true);
+}
+
+void on_waka_waka()
+{
+	GD.play(SAWTOOTH);	
 }
 
 void on_death_player()
@@ -156,47 +180,4 @@ void on_death_player()
 void on_death_ghost()
 {
 	kills++;
-}
-
-int wrap(int val, int const lower, int const upper)
-{
-	int range_size = upper - lower + 1;
-
-	if (val < lower)
-		val += range_size * ((lower - val) / range_size + 1);
-
-	return lower + (val - lower) % range_size;
-}
-
-int read_axis(int axisNumber) 
-{
-	int distance = 0; 
-
-	int reading = analogRead(axis[axisNumber]);
-
-	if (reading < minima[axisNumber]) {
-		minima[axisNumber] = reading;
-	}
-	if (reading > maxima[axisNumber]) {
-		maxima[axisNumber] = reading;
-	}
-
-	reading = map(reading, minima[axisNumber], maxima[axisNumber], 0, range);
-
-	if (abs(reading - center) > threshold) {
-		distance = (reading - center);
-	}
-
-	if (axisNumber == 1) {
-		distance = -distance;
-	}
-
-	return distance;
-}
-
-int sign(int val) 
-{
-	if (val < 0) return -1;
-	if (val == 0) return 0;
-	return 1;
 }

@@ -2,10 +2,7 @@
 #include <GD2.h>
 
 #include "level.h"
-
-#define NONE_INDEX -1
-#define POWER_INDEX 27
-#define PELLET_INDEX 29
+#include "config.h"
 
 level::level(int width, int height, int sprite_handle)
 		: width_(width), height_(height), sprite_handle_(sprite_handle) 
@@ -23,9 +20,9 @@ level::level(int width, int height, int sprite_handle)
 		16, 29, 20, 21, 21, 22, 29, 16, 16, 29, 23, 8, 8, 4, 8, 15, 
 		26, 29, 29, 29, 29, 29, 29, 16, 16, 29, 29, 29, 29, 16, 27, 16, 
 		8, 8, 8, 5, 29, 6, 29, 16, 23, 8, 8, 5, 29, 16, 29, 16, 
-		-1, -1, -1, 16, 29, 16, 29, 16, 3, 8, 8, 25, 29, 26, 29, 16, 
+		-1, -1, -1, 26, 29, 16, 29, 16, 3, 8, 8, 25, 29, 26, 29, 16, 
 		-1, -1, -1, -1, 29, 16, 29, 16, 16, 29, 29, 29, 29, 29, 29, 16, 
-		-1, -1, -1, 16, 29, 16, 29, 16, 16, 29, 0, 1, 1, 2, 29, 16, 
+		-1, -1, -1, 26, 29, 16, 29, 16, 16, 29, 0, 1, 1, 2, 29, 16, 
 		8, 8, 8, 25, 29, 26, 29, 23, 25, 29, 20, 21, 21, 22, 29, 16, 
 		6, 27, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 16, 
 		23, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 25, 
@@ -45,6 +42,15 @@ float level::screen_scale(int screen_width, int screen_height, int cell_size)
 int level::fit_cell(int xy)
 {
 	return xy * tile_size_;
+}
+
+int level::count(int item)
+{
+	int c = 0;
+	for (size_t i = 0; i < width_ * height_; i++)
+		   c += data_[i] == item;
+
+	return c;	
 }
 
 bool level::is_free(int x, int y)

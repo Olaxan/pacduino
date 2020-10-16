@@ -1,9 +1,9 @@
 #include "pac.h"
+#include "config.h"
 
 #include <SPI.h>
 #include <GD2.h>
 
-#define PI 3.14159265359f
 
 player::player(level* level, int x, int y, int cell, int cell_offset, int cell_count) :
 	   	level_(level), x_(x), y_(y), prev_x_(x), prev_y_(y), 
@@ -50,6 +50,9 @@ void player::step()
 {
 	move();
 	level_->pickup(prev_x_, prev_y_);	
+
+	if (on_step != nullptr)
+		on_step();
 }
 
 void player::draw(float alpha)

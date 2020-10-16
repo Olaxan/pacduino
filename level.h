@@ -9,13 +9,6 @@ enum class direction
 	left
 };
 
-enum class item
-{
-	none = -1,
-	pellet = 29,
-	power_pellet = 28
-};
-
 class level
 {
 private:
@@ -30,7 +23,8 @@ public:
 
 	float screen_scale(int screen_width, int screen_height, int cell_size); 
 	int fit_cell(int xy);
-	
+	int count(int item);
+
 	void (*on_pickup_pellet)(void);
 	void (*on_pickup_power)(void);
 
