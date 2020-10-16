@@ -1,5 +1,5 @@
 // This file was generated with the command-line:
-//    /usr/bin/gd2asset -f assets.gd2 -o ../assets.h vtiles.png,format=ARGB2 sprites2.png,format=ARGB2 splash.png,format=ARGB2 ttf/crackman.ttf,size=32
+//    /usr/bin/gd2asset -f /media/9016-4EF8/assets.gd2 -o ../assets.h vtiles.png,format=ARGB2 sprites2.png,format=ARGB2 splash.png,format=ARGB2 ttf/crackman.ttf,size=32 waka.wav death.wav murder.wav power.wav
 
 #define VTILES_HANDLE 0
 #define VTILES_WIDTH 32
@@ -17,7 +17,19 @@
 #define CRACKMAN_WIDTH 34
 #define CRACKMAN_HEIGHT 34
 #define CRACKMAN_CELLS 96
-#define ASSETS_END 229204UL
+#define WAKA 229208UL
+#define WAKA_LENGTH 7936
+#define WAKA_FREQ 16000
+#define DEATH 237144UL
+#define DEATH_LENGTH 4760
+#define DEATH_FREQ 44100
+#define MURDER 241904UL
+#define MURDER_LENGTH 3784
+#define MURDER_FREQ 44100
+#define POWER 245688UL
+#define POWER_LENGTH 12640
+#define POWER_FREQ 44100
+#define ASSETS_END 258328UL
 #define LOAD_ASSETS()  (GD.safeload("assets.gd2"), GD.loadptr = ASSETS_END)
 static const shape_t VTILES_SHAPE = {0, 32, 960, 0};
 static const shape_t SPRITES2_SHAPE = {1, 16, 768, 0};

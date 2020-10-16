@@ -31,6 +31,14 @@ int score = 0;
 int kills = 0;
 int pellets = 0;
 
+String killstrings[] = {
+	"Don't you feel bad?",
+	"It's your fault they're dead",
+	"You killed them, KNARKMAN",
+	"You monster",
+	"Even in death you won't let them be"
+};
+
 bool win = false;
 
 level lvl = level(LEVEL_WIDTH, LEVEL_HEIGHT, VTILES_HANDLE);
@@ -74,7 +82,6 @@ void setup()
 	// Setup events
 	lvl.on_pickup_pellet = &on_pickup_pellet;
 	lvl.on_pickup_power = &on_pickup_power;
-	pac.on_step = &on_waka_waka;
 
 	for (auto& g : ghosts)
 	{
@@ -118,6 +125,7 @@ void loop()
 	GD.cmd_text(frame_offset - 5, 5, CRACKMAN_HANDLE, 0, "KNARKMAN");	
 	GD.cmd_text(frame_offset, 40, 21, 0, String("Pellets: " + String(score) + " / " + String(pellets)).c_str());
 	GD.cmd_text(frame_offset, 55, 21, 0, String("Kills: " + String(kills)).c_str());
+	//GD.cmd_text(frame_offset, 250, 21, 0, killstring.c_str()); 
 
 	// Apply level scaling
 	GD.Begin(BITMAPS);
@@ -156,6 +164,8 @@ void splash()
 
 void on_pickup_pellet()
 {
+	GD.sample(WAKA, WAKA_LENGTH, WAKA_FREQ, ADPCM_SAMPLES);
+
 	score++;
 	if (score == pellets)
 		win = true;
@@ -163,21 +173,19 @@ void on_pickup_pellet()
 
 void on_pickup_power()
 {
+	GD.sample(POWER, POWER_LENGTH, POWER_FREQ, ADPCM_SAMPLES);
 	for (auto& g : ghosts)
 		g.set_scared(true);
 }
 
-void on_waka_waka()
-{
-	GD.play(SAWTOOTH);	
-}
-
 void on_death_player()
 {
+	GD.sample(DEATH, DEATH_LENGTH, DEATH_FREQ, ADPCM_SAMPLES);
 	reset();
 }
 
 void on_death_ghost()
 {
+	GD.sample(MURDER, MURDER_LENGTH, MURDER_FREQ, ADPCM_SAMPLES);
 	kills++;
 }

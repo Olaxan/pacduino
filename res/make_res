@@ -1,0 +1,5 @@
+#!/bin/bash
+
+gd2asset -f assets.gd2 -o ../assets.h vtiles.png,format=ARGB2 sprites2.png,format=ARGB2 splash.png,format=ARGB2 ttf/crackman.ttf,size=32 waka.wav death.wav murder.wav power.wav
+
+cp assets.gd2 /media/9016-4EF8/
