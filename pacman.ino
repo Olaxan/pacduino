@@ -21,8 +21,8 @@ const int responseDelay = 500;			// response delay of the mouse, in ms
 const int threshold = range / 4;		// resting threshold
 const int center = range / 2;			// resting position value
 
-int minima[] = {1023, 1023};			// actual analogRead minima for {x, y}
-int maxima[] = {0, 0};					// actual analogRead maxima for {x, y}
+int minima[] = {0, 0};			// actual analogRead minima for {x, y}
+int maxima[] = {1023, 1023};	// actual analogRead maxima for {x, y}
 
 float scale = 1.0f;
 
