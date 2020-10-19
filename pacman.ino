@@ -31,16 +31,6 @@ int score = 0;
 int kills = 0;
 int pellets = 0;
 
-String killstrings[] = {
-	"Don't you feel bad?",
-	"It's your fault they're dead",
-	"You killed them, KNARKMAN",
-	"You monster",
-	"Even in death you won't let them be"
-};
-
-bool win = false;
-
 level lvl = level(LEVEL_WIDTH, LEVEL_HEIGHT, VTILES_HANDLE);
 player pac = player(&lvl, 1, 1, SPRITES2_HANDLE, 0, 3);
 
@@ -125,7 +115,6 @@ void loop()
 	GD.cmd_text(frame_offset - 5, 5, CRACKMAN_HANDLE, 0, "KNARKMAN");	
 	GD.cmd_text(frame_offset, 40, 21, 0, String("Pellets: " + String(score) + " / " + String(pellets)).c_str());
 	GD.cmd_text(frame_offset, 55, 21, 0, String("Kills: " + String(kills)).c_str());
-	//GD.cmd_text(frame_offset, 250, 21, 0, killstring.c_str()); 
 
 	// Apply level scaling
 	GD.Begin(BITMAPS);
@@ -162,13 +151,23 @@ void splash()
 	delay(SPLASH_DELAY);
 }
 
+void win()
+{
+	GD.Clear();
+	GD.cmd_text(240, 106, CRACKMAN_HANDLE, OPT_CENTER, "Bra knarkat");
+	GD.cmd_text(240, 141, 21, OPT_CENTER, "You got all the pellets!"); 
+	GD.swap();
+	delay(SPLASH_DELAY);
+	reset();
+}
+
 void on_pickup_pellet()
 {
 	GD.sample(WAKA, WAKA_LENGTH, WAKA_FREQ, ADPCM_SAMPLES);
 
 	score++;
 	if (score == pellets)
-		win = true;
+		win();
 }
 
 void on_pickup_power()
