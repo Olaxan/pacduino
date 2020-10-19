@@ -16,13 +16,13 @@ const int joy_y = A9;
 const int joy_b = 22;
 
 const int axis[] = {joy_x, joy_y};  	// pin numbers for {x, y}
-const int range = 12;			// output range of X or Y movement
-const int responseDelay = 500;		// response delay of the mouse, in ms
-const int threshold = range / 4;	// resting threshold
-const int center = range / 2;		// resting position value
+const int range = 12;					// output range of X or Y movement
+const int responseDelay = 500;			// response delay of the mouse, in ms
+const int threshold = range / 4;		// resting threshold
+const int center = range / 2;			// resting position value
 
-int minima[] = {1023, 1023};		// actual analogRead minima for {x, y}
-int maxima[] = {0, 0};			// actual analogRead maxima for {x, y}
+int minima[] = {1023, 1023};			// actual analogRead minima for {x, y}
+int maxima[] = {0, 0};					// actual analogRead maxima for {x, y}
 
 float scale = 1.0f;
 
@@ -173,6 +173,7 @@ void on_pickup_pellet()
 void on_pickup_power()
 {
 	GD.sample(POWER, POWER_LENGTH, POWER_FREQ, ADPCM_SAMPLES);
+
 	for (auto& g : ghosts)
 		g.set_scared(true);
 }
